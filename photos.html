@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14090f">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Наши кадры">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.png">
+<title>Наши кадры</title>
+<style>
+  :root{
+    --bg:#14090f;
+    --cream:#fff4ef;
+    --muted:rgba(255,244,239,.6);
+    --rose:#ff5d7d;
+    --rose-2:#ffa3b8;
+    --line:rgba(255,190,205,.14);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --hand:"Bradley Hand","Segoe Script","Segoe Print","Marker Felt","Comic Sans MS",cursive;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;min-height:100%;
+    font-family:var(--sans);color:var(--cream);
+    background:
+      radial-gradient(900px 620px at 50% -8%, rgba(255,86,120,.16), transparent 62%),
+      var(--bg);
+    overflow-x:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+  a{color:inherit}
+
+  .bar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:calc(14px + env(safe-area-inset-top)) 18px 0;
+  }
+  .back{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:9px 16px;border-radius:999px;text-decoration:none;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);
+    font-size:13px;color:var(--cream);
+  }
+  .back:active{background:rgba(255,255,255,.1)}
+  .count{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+  .album-title{
+    margin:20px 16px 4px;text-align:center;font-family:var(--serif);
+    font-weight:500;font-size:clamp(28px,8vw,40px);line-height:1.15;
+  }
+  .album-title em{font-style:italic;color:var(--rose-2)}
+  .album-sub{
+    margin:0 16px 24px;text-align:center;font-size:12.5px;color:var(--muted);
+  }
+
+  .grid{
+    max-width:1080px;margin:0 auto;
+    padding:0 16px calc(34px + env(safe-area-inset-bottom));
+    columns:1;column-gap:18px;
+  }
+  @media (min-width:620px){.grid{columns:2;column-gap:22px}}
+  @media (min-width:980px){.grid{columns:3}}
+
+  .polaroid{
+    break-inside:avoid;-webkit-column-break-inside:avoid;
+    margin:0 0 22px;padding:10px 10px 0;
+    background:#f7f2e9;border-radius:3px;
+    box-shadow:0 18px 36px rgba(0,0,0,.42);
+    transform:rotate(var(--tilt,-1deg));
+    transition:transform .25s ease, box-shadow .25s ease;
+    cursor:zoom-in;
+  }
+  .polaroid:nth-child(4n+1){--tilt:-1.8deg}
+  .polaroid:nth-child(4n+2){--tilt:1.3deg}
+  .polaroid:nth-child(4n+3){--tilt:2deg}
+  .polaroid:nth-child(4n+4){--tilt:-.9deg}
+  @media (hover:hover){
+    .polaroid:hover{transform:rotate(0deg) translateY(-3px);box-shadow:0 24px 46px rgba(0,0,0,.5)}
+  }
+  .polaroid:focus-visible{outline:2px solid var(--rose-2);outline-offset:4px}
+  .polaroid img{display:block;width:100%;height:auto;background:#e7ded1}
+  .polaroid figcaption{
+    padding:10px 4px 14px;text-align:center;color:#3a2e28;
+    font-family:var(--hand);font-size:13.5px;line-height:1.35;
+  }
+  .polaroid .d{
+    display:block;margin-bottom:3px;
+    font-family:var(--sans);font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:#9b8b7d;
+  }
+
+  .empty{margin:40px 0;text-align:center;color:var(--muted);font-size:14px}
+
+  .foot{text-align:center;padding:0 0 calc(36px + env(safe-area-inset-bottom))}
+  .foot a{color:var(--muted);font-size:12.5px;text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.2);padding-bottom:2px}
+
+  /* ---------- просмотр ---------- */
+  .lightbox{
+    position:fixed;inset:0;z-index:90;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    padding:20px;background:rgba(9,5,8,.94);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    animation:fadeIn .2s ease;
+  }
+  .lightbox[hidden]{display:none}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .lightbox img{
+    max-width:94vw;max-height:70vh;
+    border:12px solid #f7f2e9;border-radius:2px;background:#f7f2e9;
+    box-shadow:0 40px 90px rgba(0,0,0,.65);
+  }
+  .lb-caption{
+    max-width:80vw;margin:0;text-align:center;
+    font-family:var(--serif);font-style:italic;font-size:16px;color:var(--cream);line-height:1.4;
+  }
+  .lb-close,.lb-nav{
+    position:absolute;border:0;cursor:pointer;color:var(--cream);
+    background:rgba(255,255,255,.07);border:1px solid var(--line);
+    border-radius:50%;display:grid;place-items:center;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .lb-close{top:calc(12px + env(safe-area-inset-top));right:14px;width:44px;height:44px;font-size:22px;line-height:1}
+  .lb-nav{top:50%;transform:translateY(-50%);width:42px;height:42px;font-size:24px;line-height:1}
+  .lb-prev{left:10px}
+  .lb-next{right:10px}
+  .lb-close:active,.lb-nav:active{background:rgba(255,255,255,.16)}
+  @media (max-width:520px){
+    .lightbox img{max-height:66vh}
+    .lb-nav{width:38px;height:38px}
+  }
+</style>
+</head>
+<body>
+  <header class="bar">
+    <a class="back" href="index.html">← На главную</a>
+    <span class="count" id="count"></span>
+  </header>
+
+  <h1 class="album-title">Наши <em>кадры</em></h1>
+  <p class="album-sub">нажми на фото, чтобы рассмотреть</p>
+
+  <main class="grid" id="grid"></main>
+
+  <footer class="foot">
+    <a href="index.html">← вернуться к открытке</a>
+  </footer>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lb-close" id="lbClose" type="button" aria-label="Закрыть">×</button>
+    <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="Предыдущее">‹</button>
+    <img id="lbImage" alt="">
+    <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="Следующее">›</button>
+    <p class="lb-caption" id="lbCaption"></p>
+  </div>
+
+<script>
+  const grid = document.getElementById("grid");
+  const countEl = document.getElementById("count");
+  const lightbox = document.getElementById("lightbox");
+  const lbImage = document.getElementById("lbImage");
+  const lbCaption = document.getElementById("lbCaption");
+
+  let photos = [];
+  let current = 0;
+
+  function plural(n, one, few, many) {
+    const d10 = n % 10;
+    const d100 = n % 100;
+    if (d10 === 1 && d100 !== 11) return one;
+    if (d10 >= 2 && d10 <= 4 && (d100 < 12 || d100 > 14)) return few;
+    return many;
+  }
+
+  function makeFigure(photo, index) {
+    const figure = document.createElement("figure");
+    figure.className = "polaroid";
+    figure.tabIndex = 0;
+    figure.setAttribute("role", "button");
+    figure.setAttribute("aria-label", "Открыть фото: " + photo.caption);
+
+    const img = document.createElement("img");
+    img.src = photo.src;
+    img.alt = photo.caption;
+    img.width = photo.w || 1200;
+    img.height = photo.h || 1600;
+    img.decoding = "async";
+    img.loading = index < 6 ? "eager" : "lazy";
+
+    const caption = document.createElement("figcaption");
+    if (photo.date) {
+      const date = document.createElement("span");
+      date.className = "d";
+      date.textContent = photo.date;
+      caption.appendChild(date);
+    }
+    caption.appendChild(document.createTextNode(photo.caption || ""));
+
+    figure.append(img, caption);
+    figure.addEventListener("click", () => openLightbox(index));
+    figure.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openLightbox(index);
+      }
+    });
+    return figure;
+  }
+
+  function openLightbox(index) {
+    current = index;
+    const photo = photos[index];
+    lbImage.src = photo.src;
+    lbImage.alt = photo.caption || "";
+    lbCaption.textContent = (photo.date ? photo.date + " · " : "") + (photo.caption || "");
+    lightbox.hidden = false;
+    document.body.style.overflow = "hidden";
+    document.getElementById("lbClose").focus({ preventScroll: true });
+    preload(index + 1);
+  }
+
+  function closeLightbox() {
+    lightbox.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  function step(direction) {
+    if (!photos.length) return;
+    current = (current + direction + photos.length) % photos.length;
+    openLightbox(current);
+  }
+
+  function preload(index) {
+    if (photos.length < 2) return;
+    const next = photos[(index + photos.length) % photos.length];
+    if (next) {
+      const img = new Image();
+      img.src = next.src;
+    }
+  }
+
+  document.getElementById("lbClose").addEventListener("click", closeLightbox);
+  document.getElementById("lbPrev").addEventListener("click", () => step(-1));
+  document.getElementById("lbNext").addEventListener("click", () => step(1));
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox) closeLightbox();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (lightbox.hidden) return;
+    if (event.key === "Escape") closeLightbox();
+    if (event.key === "ArrowLeft") step(-1);
+    if (event.key === "ArrowRight") step(1);
+  });
+
+  let touchX = null;
+  lightbox.addEventListener("touchstart", (event) => {
+    touchX = event.changedTouches[0].clientX;
+  }, { passive: true });
+  lightbox.addEventListener("touchend", (event) => {
+    if (touchX === null) return;
+    const dx = event.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 45) step(dx < 0 ? 1 : -1);
+    touchX = null;
+  }, { passive: true });
+
+  fetch("photos.json", { cache: "no-cache" })
+    .then((response) => {
+      if (!response.ok) throw new Error("no manifest");
+      return response.json();
+    })
+    .then((data) => {
+      photos = data.photos || [];
+      if (!photos.length) {
+        grid.innerHTML = '<p class="empty">Пока нет фотографий.</p>';
+        return;
+      }
+      countEl.textContent = photos.length + " " + plural(photos.length, "кадр", "кадра", "кадров");
+      photos.forEach((photo, index) => grid.appendChild(makeFigure(photo, index)));
+    })
+    .catch(() => {
+      grid.innerHTML = '<p class="empty">Не удалось загрузить альбом. Открой страницу с сайта (GitHub Pages).</p>';
+    });
+</script>
+</body>
+</html>
